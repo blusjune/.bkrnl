@@ -14,6 +14,11 @@ make mrproper;
 read -p "#>> directory to build the kernel: " _build_dir;
 if [ "X$_build_dir" = "X" ]; then
 	_build_dir=$_build_dir__default;
+	if [ ! -d $_build_dir ]; then
+		sudo mkdir -p $_build_dir;
+		sudo chmod 777 $_build_dir;
+		echo "#>> $_build_dir is created";
+	fi
 fi
 read -p "#>> ready to do 'make O=$_build_dir menuconfig'? [y|n] " _ans;
 if [ "X$_ans" = "Xy" ]; then
@@ -29,6 +34,7 @@ if [ "X$_ans" = "Xy" ]; then
 fi
 read -p "#>> continue to build the kernel? [y|n] " _ans;
 if [ "X$_ans" != "Xy" ]; then
+	echo "#>> nothing happened (built) -- exit";
 	exit 0;
 fi
 
