@@ -1099,9 +1099,9 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 	last_index = (*ppos + desc->count + PAGE_CACHE_SIZE-1) >> PAGE_CACHE_SHIFT;
 	offset = *ppos & ~PAGE_CACHE_MASK;
 
-#if 1 /* { BLUSJUNE_CODE */
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
 	printk("BLUSJUNE_CODE::\tdo_generic_file_read()\t*ppos== %lld\n", *ppos);
-#endif /* } BLUSJUNE_CODE */
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 	for (;;) {
 		struct page *page;
@@ -1399,9 +1399,9 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 	loff_t *ppos = &iocb->ki_pos;
 	struct blk_plug plug;
 
-#if 1 /* { BLUSJUNE_CODE */
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
 	printk("BLUSJUNE_CODE::\tgeneric_file_aio_read()\tpos== %lld\t*ppos==%lld\n", pos, *ppos);
-#endif /* } BLUSJUNE_CODE */
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 	count = 0;
 	retval = generic_segment_checks(iov, &nr_segs, &count, VERIFY_WRITE);
