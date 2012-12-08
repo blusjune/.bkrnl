@@ -51,8 +51,8 @@ modules.builtin
 !.gitignore
 !.mailmap
 ##{blusjune
-#!.config
-#!.config*
+!.config
+!.config*
 ##}blusjune
 
 #
