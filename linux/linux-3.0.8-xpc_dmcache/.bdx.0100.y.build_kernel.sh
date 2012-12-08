@@ -1,7 +1,7 @@
 #!/bin/sh
 
 _tstamp="$(tstamp)";
-_build_dir__default="../build-$_tstamp";
+_build_dir__default="/x/linux_kernel_build-$_tstamp";
 
 
 
