@@ -53,6 +53,7 @@ modules.builtin
 ##{blusjune
 !.config
 !.config*
+!.bdx.*
 ##}blusjune
 
 #
