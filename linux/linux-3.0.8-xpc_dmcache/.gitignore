@@ -50,6 +50,10 @@ modules.builtin
 #
 !.gitignore
 !.mailmap
+##{blusjune
+#!.config
+#!.config*
+##}blusjune
 
 #
 # Generated include files
