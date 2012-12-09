@@ -1,6 +1,7 @@
 #!/bin/sh
 
 _tstamp="$(tstamp)";
+_whoami="$(whoami)";
 _build_dir__default="/x/linux_kernel_build-$_tstamp";
 
 
@@ -16,29 +17,48 @@ if [ "X$_build_dir" = "X" ]; then
 	_build_dir=$_build_dir__default;
 	if [ ! -d $_build_dir ]; then
 		sudo mkdir -p $_build_dir;
-		sudo chmod 777 $_build_dir;
+		sudo chown -R $_whoami $_build_dir;
 		echo "#>> $_build_dir is created";
+
+		_config_latest=$(ls -1 .config* | sort | tail -1);
+		cp $_config_latest $_build_dir;
+		edco "#>> latest .config file ($_config_latest) is copied to $_build_dir";
 	fi
 fi
-read -p "#>> ready to do 'make O=$_build_dir menuconfig'? [y|n] " _ans;
-if [ "X$_ans" = "Xy" ]; then
-	make O=$_build_dir menuconfig;
-else
-	exit 0;
-fi
 
-echo "#>> please make sure that you have proper '.config' file";
-read -p "#>> escape to a shell to check '.config' file? [y|n] " _ans;
-if [ "X$_ans" = "Xy" ]; then
-	bash;
-fi
+
+
+
+echo "#>> please make sure you have proper '.config' file";
+echo "#   you may have to do one of the following actions:
+	make O=$_build_dir menuconfig;    ...........................(1)
+	cd $_build_dir; ln -s _latest_config_file_ .config;    ......(2)
+";
+read -p "#>> whcih action do you want to do [1|2|n] " _ans;
+case "X$_ans" in
+	"X1")
+		echo "#>> make O=$_build_dir menuconfig;";
+		make O=$_build_dir menuconfig;
+		;;
+	"X2")
+		echo "#>> cd $_build_dir; ln -s $_config_latest .config;";
+		(cd $_build_dir; ln -s $_config_latest .config;)
+		;;
+	*)
+		echo "#>> nothing (config) happened -- exit";
+		exit 0;
+		;;
+esac
+
+
+
+
 read -p "#>> continue to build the kernel? [y|n] " _ans;
 if [ "X$_ans" != "Xy" ]; then
-	echo "#>> nothing happened (built) -- exit";
+	echo "#>> nothing (build) happened -- exit";
 	exit 0;
 fi
-
-if [ ! -f .config ]; then
+if [ ! -f $_build_dir/.config ]; then
 	echo "#>> cannot go any further: '.config' file is needed -- exit";
 	exit 0;
 fi
