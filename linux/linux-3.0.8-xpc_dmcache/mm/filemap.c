@@ -1399,8 +1399,9 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 	loff_t *ppos = &iocb->ki_pos;
 	struct blk_plug plug;
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN */
 	printk("BLUSJUNE_CODE::\tgeneric_file_aio_read()\tpos== %lld\t*ppos==%lld\n", pos, *ppos);
+	/* pos and *ppos are the same. */
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 	count = 0;
