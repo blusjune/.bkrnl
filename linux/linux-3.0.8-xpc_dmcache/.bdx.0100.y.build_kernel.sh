@@ -73,8 +73,8 @@ make O=$_build_dir;
 
 read -p "#>> ready to do install kernel and modules? [y|n] " _ans;
 if [ "X$_ans" = "Xy" ]; then
-	echo "#>> sudo make O=$_build_dir modules_install install";
-	sudo make O=$_build_dir modules_install install;
+	echo "#>> sudo make O=$_build_dir headers_install modules_install install";
+	sudo make O=$_build_dir headers_install modules_install install;
 else
 	echo "#>> exit without installing anything to the system";
 	exit 0;
