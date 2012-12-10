@@ -995,11 +995,6 @@ long do_sys_open(int dfd, const char __user *filename, int flags, int mode)
 	char *tmp = getname(filename);
 	int fd = PTR_ERR(tmp);
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-	printk("BLUSJUNE_CODE::\tdo_sys_open()\tfilename== %s\tgetname(filename)== %s\n", filename, tmp);
-#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
-
-
 	if (!IS_ERR(tmp)) {
 		fd = get_unused_fd_flags(flags);
 		if (fd >= 0) {
@@ -1014,6 +1009,11 @@ long do_sys_open(int dfd, const char __user *filename, int flags, int mode)
 		}
 		putname(tmp);
 	}
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+	printk("[^_^] do_sys_open() // getname(filename)= %s //\n", tmp);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 	return fd;
 }
 

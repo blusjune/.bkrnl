@@ -4840,7 +4840,7 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 		e4b.bd_info->bb_first_free : start;
 
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-	printk("BLUSJUNE_CODE::\text4_trim_all_free() \t start== %d \t minblocks== %d\n",
+	printk("[^_^] ext4_trim_all_free() // start= %d // minblocks= %d //\n",
 			start, minblocks);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 

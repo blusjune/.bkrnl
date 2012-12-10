@@ -2889,8 +2889,8 @@ sector_t generic_block_bmap(struct address_space *mapping, sector_t block,
 	get_block(inode, block, &tmp, 0);
 
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-	printk("BLUSJUNE_CODE::\tgeneric_block_bmap() \t b_blocknr== %lu \t b_size== %lu \t b_data %p\n",
-			tmp.b_blocknr, tmp.b_size, tmp.b_data);
+	printk("[^_^] generic_block_bmap() // b_blocknr= %lu // b_size= %lu //\n",
+			tmp.b_blocknr, tmp.b_size);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 	return tmp.b_blocknr;
