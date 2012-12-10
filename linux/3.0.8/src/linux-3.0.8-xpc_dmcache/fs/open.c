@@ -1010,7 +1010,7 @@ long do_sys_open(int dfd, const char __user *filename, int flags, int mode)
 		putname(tmp);
 	}
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN :: caused kernel panic during boot phase - so disabled */
 	printk("[^_^] do_sys_open() // getname(filename)= %s //\n", tmp);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 

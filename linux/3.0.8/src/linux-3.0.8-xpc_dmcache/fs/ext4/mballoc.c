@@ -4835,14 +4835,14 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 	}
 	bitmap = e4b.bd_bitmap;
 
-	ext4_lock_group(sb, group);
-	start = (e4b.bd_info->bb_first_free > start) ?
-		e4b.bd_info->bb_first_free : start;
-
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
 	printk("[^_^] ext4_trim_all_free() // start= %d // minblocks= %d //\n",
 			start, minblocks);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
+	ext4_lock_group(sb, group);
+	start = (e4b.bd_info->bb_first_free > start) ?
+		e4b.bd_info->bb_first_free : start;
 
 	while (start < max) {
 		start = mb_find_next_zero_bit(bitmap, max, start);

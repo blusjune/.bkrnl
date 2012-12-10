@@ -39,3 +39,5 @@ _ext4_get_block
 ###ext4_get_block_write
 ext4_get_block
 ext4_trim_fs
+
+blkdev_issue_discard
