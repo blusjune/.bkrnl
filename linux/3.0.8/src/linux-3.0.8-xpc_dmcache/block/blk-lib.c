@@ -54,6 +54,11 @@ int blkdev_issue_discard(struct block_device *bdev, sector_t sector,
 	if (!blk_queue_discard(q))
 		return -EOPNOTSUPP;
 
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+	printk("BLUSJUNE_CODE::\tblkdev_issue_discard(): \t sector== %lu \t nr_sects== %lu\n",
+			sector, nr_sects);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 	/*
 	 * Ensure that max_discard_sectors is of the proper
 	 * granularity

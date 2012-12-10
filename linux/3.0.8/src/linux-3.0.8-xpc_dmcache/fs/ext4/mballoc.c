@@ -4839,6 +4839,11 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 	start = (e4b.bd_info->bb_first_free > start) ?
 		e4b.bd_info->bb_first_free : start;
 
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+	printk("BLUSJUNE_CODE::\text4_trim_all_free() \t start== %d \t minblocks== %d\n",
+			start, minblocks);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 	while (start < max) {
 		start = mb_find_next_zero_bit(bitmap, max, start);
 		if (start >= max)
