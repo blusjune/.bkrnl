@@ -1,0 +1,1 @@
+/x/.bdx/.bdx.0100.y.ftrace_extract_func_from_log.sh

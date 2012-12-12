@@ -1100,7 +1100,7 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 	offset = *ppos & ~PAGE_CACHE_MASK;
 
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
-	printk("[^_^] do_generic_file_read() // *ppos= %lld // index= %lu // offset= %lu //\n",
+	printk("[^_^] do_generic_file_read() // *ppos= %Ld // index= %lu // offset= %lu //\n",
 			*ppos, index, offset);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 

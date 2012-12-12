@@ -19,5 +19,5 @@
 ##blusjune's extension
 ##{
 *.tags
-cscope.out
+*.cscope_out
 ##}
