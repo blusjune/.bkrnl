@@ -18,6 +18,7 @@
 
 ##blusjune's extension
 ##{
+*.logtmp
 *.tags
 *.cscope_out
 ##}
