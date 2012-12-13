@@ -21,4 +21,5 @@
 *.logtmp
 *.tags
 *.cscope_out
+*.exec
 ##}
