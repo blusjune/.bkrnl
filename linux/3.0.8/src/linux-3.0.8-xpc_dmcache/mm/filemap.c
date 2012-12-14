@@ -1100,7 +1100,7 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 	offset = *ppos & ~PAGE_CACHE_MASK;
 
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
-	printk("[^_^] do_generic_file_read() // *ppos= %Ld // index= %lu // offset= %lu //\n",
+	printk("/// do_generic_file_read() // *ppos= %Ld // index= %lu // offset= %lu ///\n",
 			*ppos, index, offset);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
@@ -1405,6 +1405,11 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 	if (retval)
 		return retval;
 
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
+	printk("/// generic_file_aio_read() // nr_segs= %lu //  //  ///\n",
+			nr_segs);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 	blk_start_plug(&plug);
 
 	/* coalesce the iovecs and go direct-to-BIO for O_DIRECT */
@@ -1469,7 +1474,37 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 		if (desc.count == 0)
 			continue;
 		desc.error = 0;
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK?*/
+	printk("/// generic_file_aio_read() - BEFORE do_generic_file_read()//\n\
+nr_segs, seg, offset, desc.count, desc.arg.buf, desc.written, desc.error //\n\
+%lu, %lu, %lld, %lu, %lu, %lu, %d ///\n",
+			nr_segs,	// unsigned long
+			seg,		// unsigned long
+			offset,		// long long (loff_t)
+			desc.count,	// unsigned long (size_t)
+	(unsigned long) desc.arg.buf,	// unsigned long (char __user *)
+			desc.written,	// unsigned long (size_t)
+			desc.error	// int
+			);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 		do_generic_file_read(filp, ppos, &desc, file_read_actor);
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK? */
+	printk("/// generic_file_aio_read() - AFTER do_generic_file_read() //\n\
+nr_segs, seg, offset, desc.count, desc.arg.buf, desc.written, desc.error //\n\
+%lu, %lu, %lld, %lu, %lu, %lu, %d ///\n",
+			nr_segs,	// unsigned long
+			seg,		// unsigned long
+			offset,		// long long (loff_t)
+			desc.count,	// unsigned long (size_t)
+	(unsigned long) desc.arg.buf,	// unsigned long (char __user *)
+			desc.written,	// unsigned long (size_t)
+			desc.error	// int
+			);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 		retval += desc.written;
 		if (desc.error) {
 			retval = retval ?: desc.error;
