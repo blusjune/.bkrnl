@@ -2889,7 +2889,7 @@ sector_t generic_block_bmap(struct address_space *mapping, sector_t block,
 	get_block(inode, block, &tmp, 0);
 
 #if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: OK - noprob */
-	printk("[^_^] generic_block_bmap() // b_blocknr= %lu // b_size= %lu //\n",
+	printk("/// generic_block_bmap() // b_blocknr= %lu // b_size= %lu ///\n",
 			tmp.b_blocknr, tmp.b_size);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 

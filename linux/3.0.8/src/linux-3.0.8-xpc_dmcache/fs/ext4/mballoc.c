@@ -4835,8 +4835,8 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
 	}
 	bitmap = e4b.bd_bitmap;
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-	printk("[^_^] ext4_trim_all_free() // start= %d // minblocks= %d //\n",
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN */
+	printk("/// ext4_trim_all_free() // start= %d // minblocks= %d ///\n",
 			start, minblocks);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 

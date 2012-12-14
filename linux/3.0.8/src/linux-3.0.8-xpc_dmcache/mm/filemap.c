@@ -1099,7 +1099,7 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 	last_index = (*ppos + desc->count + PAGE_CACHE_SIZE-1) >> PAGE_CACHE_SHIFT;
 	offset = *ppos & ~PAGE_CACHE_MASK;
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
 	printk("/// do_generic_file_read() // *ppos= %Ld // index= %lu // offset= %lu ///\n",
 			*ppos, index, offset);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
@@ -1112,6 +1112,11 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 
 		cond_resched();
 find_page:
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
+		printk("/// do_generic_file_read() // index= %lu ///\n", index);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 		page = find_get_page(mapping, index);
 		if (!page) {
 			page_cache_sync_readahead(mapping,
@@ -1404,11 +1409,6 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 	retval = generic_segment_checks(iov, &nr_segs, &count, VERIFY_WRITE);
 	if (retval)
 		return retval;
-
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
-	printk("/// generic_file_aio_read() // nr_segs= %lu //  //  ///\n",
-			nr_segs);
-#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 	blk_start_plug(&plug);
 

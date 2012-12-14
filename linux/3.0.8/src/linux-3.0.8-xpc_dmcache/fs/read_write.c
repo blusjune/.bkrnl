@@ -319,15 +319,15 @@ ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
 		count = ret;
 		if (file->f_op->read)
 		{
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-			printk("[^_^] vfs_read() // file->f_op->read(file, buf, count, pos) ///\n");
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN */
+			printk("/// vfs_read() // file->f_op->read() ///\n");
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 			ret = file->f_op->read(file, buf, count, pos);
 		}
 		else
 		{
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
-			printk("[^_^] vfs_read() // do_sync_read(file, buf, count, pos) ///\n");
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN */
+			printk("/// vfs_read() // do_sync_read() ///\n");
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 			ret = do_sync_read(file, buf, count, pos);
 		}
