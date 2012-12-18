@@ -9,7 +9,8 @@
 
 _tstamp=$(tstamp);
 _srcdir="linux";
-_prefix="linux-3.6.10-xpc";
+#_prefix="linux-3.6.10-xpc";
+_prefix="linux-3.0.8-xpc_dmcache";
 _index_file_ctags="${_prefix}.tags";
 _index_file_cscope="${_prefix}.cscope_out";
 _index_file_ctags_default="tags";
