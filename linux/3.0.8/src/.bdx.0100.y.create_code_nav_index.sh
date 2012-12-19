@@ -1,1 +1,0 @@
-../.bdx/.bdx.0100.y.create_code_nav_index.sh
