@@ -702,6 +702,55 @@ int __lock_page_or_retry(struct page *page, struct mm_struct *mm,
  * Is there a pagecache struct page at the given (mapping, offset) tuple?
  * If yes, increment its refcount and return it; if no, return NULL.
  */
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+struct page *find_get_page(struct address_space *mapping, pgoff_t offset)
+{
+	void **pagep;
+	struct page *page;
+	// pagep == (struct radix_tree_node **)
+	// *pagep == (struct page *) page
+
+	rcu_read_lock();
+repeat:
+	page = NULL;
+	pagep = radix_tree_lookup_slot(&mapping->page_tree, offset);
+	if (pagep) {
+		page = radix_tree_deref_slot(pagep);
+		if (unlikely(!page))
+			goto out;
+		if (radix_tree_deref_retry(page))
+			goto repeat;
+
+		if (!page_cache_get_speculative(page))
+			goto repeat;
+
+		/*
+		 * Has the page moved?
+		 * This is part of the lockless pagecache protocol. See
+		 * include/linux/pagemap.h for details.
+		 */
+		if (unlikely(page != *pagep)) {
+			page_cache_release(page);
+			goto repeat;
+		}
+	}
+out:
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+	/* (pgoff_t) == (unsigned long) #include/linux/types.h */
+	printk("/// find_get_page() \
+// mapping->page_tree.height= %u // offset= %lu \
+// page->_count.counter= %d // page->_mapcount.counter= %d // page->index= %lu ///\n",
+			mapping->page_tree.height, offset,
+			page->_count.counter, page->_mapcount.counter, page->index);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
+	rcu_read_unlock();
+
+	return page;
+}
+EXPORT_SYMBOL(find_get_page);
+#else
 struct page *find_get_page(struct address_space *mapping, pgoff_t offset)
 {
 	void **pagep;
@@ -737,6 +786,7 @@ out:
 	return page;
 }
 EXPORT_SYMBOL(find_get_page);
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 /**
  * find_lock_page - locate, pin and lock a pagecache page
