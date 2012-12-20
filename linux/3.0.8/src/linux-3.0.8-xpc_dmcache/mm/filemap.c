@@ -702,7 +702,7 @@ int __lock_page_or_retry(struct page *page, struct mm_struct *mm,
  * Is there a pagecache struct page at the given (mapping, offset) tuple?
  * If yes, increment its refcount and return it; if no, return NULL.
  */
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN */
 struct page *find_get_page(struct address_space *mapping, pgoff_t offset)
 {
 	void **pagep;
@@ -736,7 +736,7 @@ repeat:
 	}
 out:
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: may introduce kernel panic - maybe due to too early stage not ready for printk()? */
 	/* (pgoff_t) == (unsigned long) #include/linux/types.h */
 	printk("/// find_get_page() \
 // mapping->page_tree.height= %u // offset= %lu \
@@ -1163,16 +1163,38 @@ static void do_generic_file_read(struct file *filp, loff_t *ppos,
 		cond_resched();
 find_page:
 
-#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
+#if 0 /* { BLUSJUNE_CODE_ZONE_OPEN :: seems OK */
 		printk("/// do_generic_file_read() // index= %lu ///\n", index);
 #endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
 
 		page = find_get_page(mapping, index);
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+if (page) {
+	printk("/// do_generic_file_read().find_get_page().1: \
+// mapping->page_tree.height= %u // index= %lu \
+// page->_count.counter= %d // page->_mapcount.counter= %d // page->index= %lu ///\n",
+	mapping->page_tree.height, index,
+	page->_count.counter, page->_mapcount.counter, page->index);
+}
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 		if (!page) {
 			page_cache_sync_readahead(mapping,
 					ra, filp,
 					index, last_index - index);
 			page = find_get_page(mapping, index);
+
+#if 1 /* { BLUSJUNE_CODE_ZONE_OPEN */
+if (page) {
+	printk("/// do_generic_file_read().find_get_page().2: \
+// mapping->page_tree.height= %u // index= %lu \
+// page->_count.counter= %d // page->_mapcount.counter= %d // page->index= %lu ///\n",
+	mapping->page_tree.height, index,
+	page->_count.counter, page->_mapcount.counter, page->index);
+}
+#endif /* } BLUSJUNE_CODE_ZONE_CLOSE */
+
 			if (unlikely(page == NULL))
 				goto no_cached_page;
 		}
