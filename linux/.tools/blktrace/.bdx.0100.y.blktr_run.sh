@@ -1,5 +1,7 @@
 #!/bin/sh
+##.bdx.0100.y.blktr_run.sh
 ##_ver=20121221_200656
+##_ver=20121222_152258
 
 
 _tstamp="$(tstamp)";
@@ -9,6 +11,17 @@ if [ "X$(id -u)" != "X0" ]; then
 	echo "#>> you MUST be root -- EXIT";
 	exit 2;
 fi
+
+
+
+
+read -p "#<< pre-tune the system? [y|n] " _ans;
+if [ "X$_ans" = "Xy" ]; then
+	. .bdx.0110.n.blktr_pretune_system.sh		# for ease of observation (blktracing)
+fi
+
+
+
 
 read -p "#<< device to block trace: " _dev;
 if [ "X$_dev" = "X" ]; then
