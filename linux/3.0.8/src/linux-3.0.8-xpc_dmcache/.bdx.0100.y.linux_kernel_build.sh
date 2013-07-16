@@ -1,1 +1,0 @@
-/x/.bdx/.bdx.0100.y.linux_kernel_build.sh
