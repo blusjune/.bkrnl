@@ -27,7 +27,7 @@ static void mga_dirty_update(struct mga_fbdev *mfbdev,
 	struct mgag200_bo *bo;
 	int src_offset, dst_offset;
 	int bpp = (mfbdev->mfb.base.bits_per_pixel + 7)/8;
-	int ret;
+	int ret = -EBUSY;
 	bool unmap = false;
 	bool store_for_later = false;
 	int x2, y2;
@@ -41,7 +41,8 @@ static void mga_dirty_update(struct mga_fbdev *mfbdev,
 	 * then the BO is being moved and we should
 	 * store up the damage until later.
 	 */
-	ret = mgag200_bo_reserve(bo, true);
+	if (!in_interrupt())
+		ret = mgag200_bo_reserve(bo, true);
 	if (ret) {
 		if (ret != -EBUSY)
 			return;
@@ -141,12 +142,9 @@ static int mgag200fb_create_object(struct mga_fbdev *afbdev,
 				   struct drm_gem_object **gobj_p)
 {
 	struct drm_device *dev = afbdev->helper.dev;
-	u32 bpp, depth;
 	u32 size;
 	struct drm_gem_object *gobj;
-
 	int ret = 0;
-	drm_fb_get_bpp_depth(mode_cmd->pixel_format, &depth, &bpp);
 
 	size = mode_cmd->pitches[0] * mode_cmd->height;
 	ret = mgag200_gem_create(dev, size, true, &gobj);
@@ -285,7 +283,7 @@ int mgag200_fbdev_init(struct mga_device *mdev)
 	struct mga_fbdev *mfbdev;
 	int ret;
 
-	mfbdev = kzalloc(sizeof(struct mga_fbdev), GFP_KERNEL);
+	mfbdev = devm_kzalloc(mdev->dev->dev, sizeof(struct mga_fbdev), GFP_KERNEL);
 	if (!mfbdev)
 		return -ENOMEM;
 
@@ -295,10 +293,9 @@ int mgag200_fbdev_init(struct mga_device *mdev)
 
 	ret = drm_fb_helper_init(mdev->dev, &mfbdev->helper,
 				 mdev->num_crtc, MGAG200FB_CONN_LIMIT);
-	if (ret) {
-		kfree(mfbdev);
+	if (ret)
 		return ret;
-	}
+
 	drm_fb_helper_single_add_all_connectors(&mfbdev->helper);
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
@@ -315,6 +312,4 @@ void mgag200_fbdev_fini(struct mga_device *mdev)
 		return;
 
 	mga_fbdev_destroy(mdev->dev, mdev->mfbdev);
-	kfree(mdev->mfbdev);
-	mdev->mfbdev = NULL;
 }

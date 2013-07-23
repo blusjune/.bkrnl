@@ -130,6 +130,8 @@ void __init setup_arch(char **cmdline_p)
 	printk(KERN_INFO "The 32-bit Kernel has started...\n");
 #endif
 
+	printk(KERN_INFO "Default page size is %dKB.\n", (int)(PAGE_SIZE / 1024));
+
 	pdc_console_init();
 
 #ifdef CONFIG_64BIT
@@ -154,7 +156,7 @@ void __init setup_arch(char **cmdline_p)
 #endif
 
 #if defined(CONFIG_VT) && defined(CONFIG_DUMMY_CONSOLE)
-	conswitchp = &dummy_con;	/* we use take_over_console() later ! */
+	conswitchp = &dummy_con;	/* we use do_take_over_console() later ! */
 #endif
 
 }

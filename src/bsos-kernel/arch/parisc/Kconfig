@@ -1,5 +1,6 @@
 config PARISC
 	def_bool y
+	select ARCH_HAS_DEBUG_STRICT_USER_COPY_CHECKS
 	select HAVE_IDE
 	select HAVE_OPROFILE
 	select HAVE_FUNCTION_TRACER if 64BIT
@@ -12,6 +13,7 @@ config PARISC
 	select BUG
 	select HAVE_PERF_EVENTS
 	select GENERIC_ATOMIC64 if !64BIT
+	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 	select HAVE_GENERIC_HARDIRQS
 	select BROKEN_RODATA
 	select GENERIC_IRQ_PROBE
@@ -25,6 +27,7 @@ config PARISC
 	select MODULES_USE_ELF_RELA
 	select CLONE_BACKWARDS
 	select TTY # Needed for pdc_cons.c
+	select HAVE_DEBUG_STACKOVERFLOW
 
 	help
 	  The PA-RISC microprocessor is designed by Hewlett-Packard and used
@@ -252,7 +255,6 @@ config IRQSTACKS
 config HOTPLUG_CPU
 	bool
 	default y if SMP
-	select HOTPLUG
 
 config ARCH_SELECT_MEMORY_MODEL
 	def_bool y

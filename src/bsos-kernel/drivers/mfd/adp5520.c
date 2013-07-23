@@ -223,7 +223,7 @@ static int adp5520_probe(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
@@ -244,7 +244,7 @@ static int adp5520_probe(struct i2c_client *client,
 		if (ret) {
 			dev_err(&client->dev, "failed to request irq %d\n",
 					chip->irq);
-			goto out_free_chip;
+			return ret;
 		}
 	}
 
@@ -302,9 +302,6 @@ out_free_irq:
 	if (chip->irq)
 		free_irq(chip->irq, chip);
 
-out_free_chip:
-	kfree(chip);
-
 	return ret;
 }
 
@@ -317,7 +314,6 @@ static int adp5520_remove(struct i2c_client *client)
 
 	adp5520_remove_subdevs(chip);
 	adp5520_write(chip->dev, ADP5520_MODE_STATUS, 0);
-	kfree(chip);
 	return 0;
 }
 
@@ -364,17 +360,7 @@ static struct i2c_driver adp5520_driver = {
 	.id_table 	= adp5520_id,
 };
 
-static int __init adp5520_init(void)
-{
-	return i2c_add_driver(&adp5520_driver);
-}
-module_init(adp5520_init);
-
-static void __exit adp5520_exit(void)
-{
-	i2c_del_driver(&adp5520_driver);
-}
-module_exit(adp5520_exit);
+module_i2c_driver(adp5520_driver);
 
 MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
 MODULE_DESCRIPTION("ADP5520(01) PMIC-MFD Driver");

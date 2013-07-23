@@ -382,7 +382,7 @@ static int __br_mdb_add(struct net *net, struct net_bridge *br,
 	return ret;
 }
 
-static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh, void *arg)
+static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
 	struct net *net = sock_net(skb->sk);
 	struct br_mdb_entry *entry;
@@ -447,7 +447,7 @@ static int __br_mdb_del(struct net_bridge *br, struct br_mdb_entry *entry)
 		call_rcu_bh(&p->rcu, br_multicast_free_pg);
 		err = 0;
 
-		if (!mp->ports && !mp->mglist &&
+		if (!mp->ports && !mp->mglist && mp->timer_armed &&
 		    netif_running(br->dev))
 			mod_timer(&mp->timer, jiffies);
 		break;
@@ -458,7 +458,7 @@ unlock:
 	return err;
 }
 
-static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh, void *arg)
+static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
 	struct net_device *dev;
 	struct br_mdb_entry *entry;

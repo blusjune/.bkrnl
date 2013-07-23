@@ -25,7 +25,7 @@
 #include <linux/gfp.h>
 #include <linux/mpage.h>
 #include <linux/writeback.h>
-#include <linux/uio.h>
+#include <linux/aio.h>
 #include "nilfs.h"
 #include "btnode.h"
 #include "segment.h"
@@ -54,7 +54,7 @@ void nilfs_inode_add_blocks(struct inode *inode, int n)
 
 	inode_add_bytes(inode, (1 << inode->i_blkbits) * n);
 	if (root)
-		atomic_add(n, &root->blocks_count);
+		atomic64_add(n, &root->blocks_count);
 }
 
 void nilfs_inode_sub_blocks(struct inode *inode, int n)
@@ -63,7 +63,7 @@ void nilfs_inode_sub_blocks(struct inode *inode, int n)
 
 	inode_sub_bytes(inode, (1 << inode->i_blkbits) * n);
 	if (root)
-		atomic_sub(n, &root->blocks_count);
+		atomic64_sub(n, &root->blocks_count);
 }
 
 /**
@@ -175,6 +175,11 @@ static int nilfs_writepages(struct address_space *mapping,
 	struct inode *inode = mapping->host;
 	int err = 0;
 
+	if (inode->i_sb->s_flags & MS_RDONLY) {
+		nilfs_clear_dirty_pages(mapping, false);
+		return -EROFS;
+	}
+
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		err = nilfs_construct_dsync_segment(inode->i_sb, inode,
 						    wbc->range_start,
@@ -186,6 +191,18 @@ static int nilfs_writepage(struct page *page, struct writeback_control *wbc)
 {
 	struct inode *inode = page->mapping->host;
 	int err;
+
+	if (inode->i_sb->s_flags & MS_RDONLY) {
+		/*
+		 * It means that filesystem was remounted in read-only
+		 * mode because of error or metadata corruption. But we
+		 * have dirty pages that try to be flushed in background.
+		 * So, here we simply discard this dirty page.
+		 */
+		nilfs_clear_dirty_page(page, false);
+		unlock_page(page);
+		return -EROFS;
+	}
 
 	redirty_page_for_writepage(wbc, page);
 	unlock_page(page);
@@ -352,7 +369,7 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 		goto failed_ifile_create_inode;
 	/* reference count of i_bh inherits from nilfs_mdt_read_block() */
 
-	atomic_inc(&root->inodes_count);
+	atomic64_inc(&root->inodes_count);
 	inode_init_owner(inode, dir, mode);
 	inode->i_ino = ino;
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
@@ -784,7 +801,7 @@ void nilfs_evict_inode(struct inode *inode)
 
 	ret = nilfs_ifile_delete_inode(ii->i_root->ifile, inode->i_ino);
 	if (!ret)
-		atomic_dec(&ii->i_root->inodes_count);
+		atomic64_dec(&ii->i_root->inodes_count);
 
 	nilfs_clear_inode(inode);
 

@@ -186,8 +186,8 @@ static int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 		[PCI_D0] = ACPI_STATE_D0,
 		[PCI_D1] = ACPI_STATE_D1,
 		[PCI_D2] = ACPI_STATE_D2,
-		[PCI_D3hot] = ACPI_STATE_D3,
-		[PCI_D3cold] = ACPI_STATE_D3
+		[PCI_D3hot] = ACPI_STATE_D3_COLD,
+		[PCI_D3cold] = ACPI_STATE_D3_COLD,
 	};
 	int error = -EINVAL;
 
@@ -211,7 +211,7 @@ static int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 
 	if (!error)
 		dev_info(&dev->dev, "power state changed by ACPI to %s\n",
-			 pci_power_name(state));
+			 acpi_power_state_string(state_conv[state]));
 
 	return error;
 }
@@ -288,6 +288,32 @@ static struct pci_platform_pm_ops acpi_pci_platform_pm = {
 	.run_wake = acpi_pci_run_wake,
 };
 
+void acpi_pci_add_bus(struct pci_bus *bus)
+{
+	acpi_handle handle = NULL;
+
+	if (bus->bridge)
+		handle = ACPI_HANDLE(bus->bridge);
+	if (acpi_pci_disabled || handle == NULL)
+		return;
+
+	acpi_pci_slot_enumerate(bus, handle);
+	acpiphp_enumerate_slots(bus, handle);
+}
+
+void acpi_pci_remove_bus(struct pci_bus *bus)
+{
+	/*
+	 * bus->bridge->acpi_node.handle has already been reset to NULL
+	 * when acpi_pci_remove_bus() is called, so don't check ACPI handle.
+	 */
+	if (acpi_pci_disabled)
+		return;
+
+	acpiphp_remove_slots(bus);
+	acpi_pci_slot_remove(bus);
+}
+
 /* ACPI bus type */
 static int acpi_pci_find_device(struct device *dev, acpi_handle *handle)
 {
@@ -350,19 +376,23 @@ static int __init acpi_pci_init(void)
 	int ret;
 
 	if (acpi_gbl_FADT.boot_flags & ACPI_FADT_NO_MSI) {
-		printk(KERN_INFO"ACPI FADT declares the system doesn't support MSI, so disable it\n");
+		pr_info("ACPI FADT declares the system doesn't support MSI, so disable it\n");
 		pci_no_msi();
 	}
 
 	if (acpi_gbl_FADT.boot_flags & ACPI_FADT_NO_ASPM) {
-		printk(KERN_INFO"ACPI FADT declares the system doesn't support PCIe ASPM, so disable it\n");
+		pr_info("ACPI FADT declares the system doesn't support PCIe ASPM, so disable it\n");
 		pcie_no_aspm();
 	}
 
 	ret = register_acpi_bus_type(&acpi_pci_bus);
 	if (ret)
 		return 0;
+
 	pci_set_platform_pm(&acpi_pci_platform_pm);
+	acpi_pci_slot_init();
+	acpiphp_init();
+
 	return 0;
 }
 arch_initcall(acpi_pci_init);

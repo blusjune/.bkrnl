@@ -71,7 +71,7 @@ config IP_NF_MATCH_ECN
 
 config IP_NF_MATCH_RPFILTER
 	tristate '"rpfilter" reverse path filter match support'
-	depends on NETFILTER_ADVANCED
+	depends on NETFILTER_ADVANCED && (IP_NF_MANGLE || IP_NF_RAW)
 	---help---
 	  This option allows you to match packets whose replies would
 	  go out via the interface the packet came in.
@@ -111,7 +111,7 @@ config IP_NF_TARGET_REJECT
 	  To compile it as a module, choose M here.  If unsure, say N.
 
 config IP_NF_TARGET_ULOG
-	tristate "ULOG target support"
+	tristate "ULOG target support (obsolete)"
 	default m if NETFILTER_ADVANCED=n
 	---help---
 

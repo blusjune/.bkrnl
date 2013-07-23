@@ -462,11 +462,7 @@ static int cp210x_open(struct tty_struct *tty, struct usb_serial_port *port)
 static void cp210x_close(struct usb_serial_port *port)
 {
 	usb_serial_generic_close(port);
-
-	mutex_lock(&port->serial->disc_mutex);
-	if (!port->serial->disconnected)
-		cp210x_set_config_single(port, CP210X_IFC_ENABLE, UART_DISABLE);
-	mutex_unlock(&port->serial->disc_mutex);
+	cp210x_set_config_single(port, CP210X_IFC_ENABLE, UART_DISABLE);
 }
 
 /*
@@ -669,8 +665,6 @@ static void cp210x_set_termios(struct tty_struct *tty,
 	unsigned int cflag, old_cflag;
 	unsigned int bits;
 	unsigned int modem_ctl[4];
-
-	dev_dbg(dev, "%s - port %d\n", __func__, port->number);
 
 	if (!tty)
 		return;

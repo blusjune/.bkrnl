@@ -32,7 +32,7 @@
 
 static int opDEC_fix;
 
-static void __cpuinit
+static void
 opDEC_check(void)
 {
 	__asm__ __volatile__ (
@@ -168,13 +168,6 @@ void show_stack(struct task_struct *task, unsigned long *sp)
 	printk("\n");
 	dik_show_trace(sp);
 }
-
-void dump_stack(void)
-{
-	show_stack(NULL, NULL);
-}
-
-EXPORT_SYMBOL(dump_stack);
 
 void
 die_if_kernel(char * str, struct pt_regs *regs, long err, unsigned long *r9_15)
@@ -1066,7 +1059,7 @@ give_sigbus:
 	return;
 }
 
-void __cpuinit
+void
 trap_init(void)
 {
 	/* Tell PAL-code what global pointer we want in the kernel.  */
